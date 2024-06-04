@@ -8,15 +8,21 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/accueil" routerLinkActive="active">Tableau de bord</a>
+          <a class="nav-link" routerLink="/accueil" routerLinkActive="active">Accueil</a>
         </li>
+
+        @if (authentification.role == "Administrateur") {
+
         <li class="nav-item">
           <a class="nav-link" routerLink="/gestion-utilisateurs" routerLinkActive="active">Gestion utilisateurs</a>
         </li>
+        }
       </ul>
       <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Utilisateurs..." aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Rechercher</button>
+        <input class="form-control me-2" type="search" placeholder="Utilisateur..." aria-label="Search" />
+        <button class="btn btn-outline-success" type="submit">
+          Rechercher
+        </button>
       </form>
     </div>
   </div>

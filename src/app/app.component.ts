@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AuthentificationService } from './authentification.sercice';
 
 @Component({
   selector: 'app-root',
@@ -9,5 +10,5 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'admin-mns';
+  authentification: AuthentificationService = inject(AuthentificationService);
 }
