@@ -12,7 +12,9 @@ export class AuthentificationService {
   firstname: string | null = null;
   lastname: string | null = null;
 
-  constructor() {}
+  constructor() {
+    this.getInfoFromJwtLocalStorage();
+  }
 
   connexion(jwt: string) {
     localStorage.setItem('jwt', jwt);

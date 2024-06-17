@@ -4,20 +4,20 @@ $background-color: #303030; // Couleur de fond pour le thème sombre
 $card-background-color: #424242; // Couleur de fond pour la carte dans le thème sombre
 $text-color: #ffffff; // Couleur de texte claire pour le thème sombre
 
-.login-container {
+.discussions-container {
   display: flex;
   justify-content: center;
   align-items: center;
-
+  height: calc(100vh - 70px);
   background-color: $background-color;
   color: $text-color;
   padding: 20px;
   box-sizing: border-box;
-  margin-top: 40px;
+  margin-top: 70px;
 }
 
-.login-card {
-  max-width: 400px;
+.discussions-card {
+  max-width: 600px;
   width: 100%;
   background-color: $card-background-color;
   color: $text-color;
@@ -32,8 +32,8 @@ $text-color: #ffffff; // Couleur de texte claire pour le thème sombre
   background-color: $primary-color;
   color: $text-color;
   padding: 10px;
-  border-radius: 10px 10px 0 0;
   margin-bottom: 10px;
+  border-radius: 10px 10px 0 0;
 }
 
 .header-avatar {
@@ -56,12 +56,35 @@ mat-card-subtitle {
   color: lighten($text-color, 20%);
 }
 
-.full-width {
-  width: 100%;
+.message-list {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  background-color: lighten($card-background-color, 5%);
+  padding: 10px;
+  border-radius: 5px;
 }
 
-.button-container {
+.message {
+  background-color: darken($card-background-color, 5%);
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.timestamp {
+  display: block;
+  font-size: 12px;
+  color: #bbb;
+  text-align: right;
+}
+
+.message-form {
   display: flex;
-  justify-content: center;
-  margin-top: 20px;
+  gap: 10px;
+  align-items: center;
+
+  mat-form-field {
+    flex: 1;
+  }
 }

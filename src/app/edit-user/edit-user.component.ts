@@ -1,124 +1,120 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, inject } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
-import { MatButtonModule } from '@angular/material/button';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSelectModule } from '@angular/material/select';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-user',
   standalone: true,
   imports: [
-    FormsModule,
+    CommonModule,
     ReactiveFormsModule,
+    MatFormFieldModule,
     MatInputModule,
-    MatSelectModule,
     MatButtonModule,
+    MatCardModule,
+    MatSelectModule,
     HttpClientModule,
-    MatSnackBarModule,
   ],
   templateUrl: './edit-user.component.html',
-  styleUrl: './edit-user.component.scss',
+  styleUrls: ['./edit-user.component.scss'],
 })
-export class EditUserComponent {
-  http: HttpClient = inject(HttpClient);
-  formBuilder: FormBuilder = inject(FormBuilder);
-  snackBar: MatSnackBar = inject(MatSnackBar);
-  router: Router = inject(Router);
-  route: ActivatedRoute = inject(ActivatedRoute);
+export class EditUserComponent implements OnInit {
+  formulaire: FormGroup;
+  userId: string | null = null;
+  roleList: string[] = ['User', 'Admin']; // Liste des rôles disponibles
 
-  formulaire: FormGroup = this.formBuilder.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    firstname: ['', [Validators.required]],
-    lastname: ['', [Validators.required]],
-    role: ['Etudiant', [Validators.required]],
-  });
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    this.formulaire = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      firstname: ['', Validators.required],
+      lastname: ['', Validators.required],
+      role: ['', Validators.required],
+    });
+  }
 
-  roleList: string[] = ['Etudiant', 'Gestionnaire', 'Administrateur'];
+  ngOnInit(): void {
+    this.route.paramMap.subscribe((params) => {
+      this.userId = params.get('id');
 
-  userId?: number;
-
-  ngOnInit() {
-    this.route.params.subscribe((parametres) => {
-      //si il y a bien un parametre dans l'URL et que c'est bien un nombre
-      if (parametres['id'] && !isNaN(parametres['id'])) {
-        this.userId = parametres['id'];
-
-        this.formulaire = this.formBuilder.group({
-          email: ['', [Validators.required, Validators.email]],
-          password: ['', []],
-          firstname: ['', [Validators.required]],
-          lastname: ['', [Validators.required]],
-          role: ['Etudiant', [Validators.required]],
-        });
-
-        const jwt = localStorage.getItem('jwt');
-
-        if (jwt) {
-          this.http
-            .get(
-              'http://angular-messagerie/get-user.php?id=' + parametres['id'],
-              { headers: { Authorization: jwt } }
-            )
-            .subscribe({
-              next: (utilisateur) => this.formulaire.patchValue(utilisateur),
-              error: (erreur) => alert(erreur.error.message),
-            });
-        }
+      if (this.userId) {
+        this.loadUserData(this.userId);
       } else {
-        this.formulaire = this.formBuilder.group({
-          email: ['', [Validators.required, Validators.email]],
-          password: ['', [Validators.required]],
-          firstname: ['', [Validators.required]],
-          lastname: ['', [Validators.required]],
-          role: ['Etudiant', [Validators.required]],
-        });
+        // Clear password validators if in edit mode
+        this.formulaire.get('password')?.clearValidators();
+        this.formulaire.get('password')?.updateValueAndValidity();
       }
     });
   }
 
-  onAjoutUtilisateur() {
+  loadUserData(userId: string): void {
+    this.http
+      .get(`http://localhost/path-to-your-backend/get-user.php?id=${userId}`)
+      .subscribe((user: any) => {
+        this.formulaire.patchValue({
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          role: user.role,
+        });
+        // Remove password validators in edit mode
+        this.formulaire.get('password')?.clearValidators();
+        this.formulaire.get('password')?.updateValueAndValidity();
+      });
+  }
+
+  onSubmit(): void {
     if (this.formulaire.valid) {
-      const url = this.userId
-        ? 'http://angular-messagerie/edit-user.php?id=' + this.userId
-        : 'http://angular-messagerie/add-user.php';
+      if (
+        !this.userId &&
+        this.formulaire.value.password !== this.formulaire.value.confirmPassword
+      ) {
+        console.error('Passwords do not match');
+        return;
+      }
 
-      const jwt = localStorage.getItem('jwt');
-
-      if (jwt) {
+      const formData = this.formulaire.value;
+      if (this.userId) {
+        // Update user
         this.http
-          .post(url, this.formulaire.value, {
-            headers: { Authorization: jwt },
-          })
-          .subscribe({
-            next: (resultat) => {
-              this.snackBar.open(
-                "L'utilisateur a bien été " +
-                  (this.userId ? 'modifié' : 'ajouté'),
-                undefined,
-                {
-                  duration: 3000,
-                }
-              );
-              this.router.navigateByUrl('/gestion-utilisateurs');
+          .put(
+            `http://localhost/path-to-your-backend/edit-user.php?id=${this.userId}`,
+            formData
+          )
+          .subscribe(
+            (response: any) => {
+              this.router.navigate(['/gestion-utilisateurs']);
             },
-            error: (erreur) => {
-              if (erreur.status == 409) {
-                alert(erreur.error.message);
-              } else {
-                alert('Erreur inconnue, contactez votre administrateur');
-              }
+            (error) => {
+              console.error('Error updating user', error);
+            }
+          );
+      } else {
+        // Add new user
+        this.http
+          .post('http://localhost/path-to-your-backend/add-user.php', formData)
+          .subscribe(
+            (response: any) => {
+              this.router.navigate(['/gestion-utilisateurs']);
             },
-          });
+            (error) => {
+              console.error('Error adding user', error);
+            }
+          );
       }
     }
   }

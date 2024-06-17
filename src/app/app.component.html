@@ -10,13 +10,15 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/accueil" routerLinkActive="active">Accueil</a>
         </li>
-
-        @if (authentification.role == "Administrateur") {
-
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/gestion-utilisateurs" routerLinkActive="active">Gestion utilisateurs</a>
+        <li class="nav-item" *ngIf="!authentification.connecte">
+          <a class="nav-link" routerLink="/connexion" routerLinkActive="active">Se connecter</a>
         </li>
-        }
+        <!-- <li class="nav-item" *ngIf="authentification.connecte && authentification.role === 'Administrateur'">
+          <a class="nav-link" routerLink="/ajout-utilisateur" routerLinkActive="active">Ajouter un utilisateur</a>
+        </li> -->
+        <li class="nav-item" *ngIf="authentification.connecte">
+          <a class="nav-link" (click)="onDeconnexion()">Se déconnecter</a>
+        </li>
       </ul>
       <form class="d-flex" role="search">
         <input class="form-control me-2" type="search" placeholder="Utilisateur..." aria-label="Search" />
@@ -28,4 +30,6 @@
   </div>
 </nav>
 
-<router-outlet />
+<div class="main-content">
+  <router-outlet></router-outlet>
+</div>

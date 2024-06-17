@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
@@ -9,10 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
-import { AuthentificationService } from '../authentification.sercice';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [
     CommonModule,
@@ -23,39 +22,56 @@ import { AuthentificationService } from '../authentification.sercice';
     MatCardModule,
     HttpClientModule,
   ],
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss'],
 })
-export class LoginComponent {
+export class RegisterComponent implements OnInit {
   formulaire: FormGroup;
 
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
-    private router: Router,
-    private authService: AuthentificationService
+    private router: Router
   ) {
     this.formulaire = this.fb.group({
+      firstname: ['', Validators.required],
+      lastname: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+      role: ['', Validators.required],
     });
   }
 
-  onConnexion(): void {
+  ngOnInit(): void {}
+
+  onRegister(): void {
     if (this.formulaire.valid) {
+      if (
+        this.formulaire.value.password !== this.formulaire.value.confirmPassword
+      ) {
+        console.error('Passwords do not match');
+        return;
+      }
+
       this.http
-        .post('http://angular-messagerie/login.php', this.formulaire.value)
+        .post(
+          'http://localhost/path-to-your-backend/add-user.php',
+          this.formulaire.value
+        )
         .subscribe(
           (response: any) => {
-            if (response && response.jwt) {
-              this.authService.connexion(response.jwt);
-              this.router.navigate(['/discussions']);
+            if (
+              response &&
+              response.message === "L'utilisateur a bien été ajouté"
+            ) {
+              this.router.navigate(['/connexion']);
             } else {
-              console.error('Login failed');
+              console.error('Registration failed');
             }
           },
           (error) => {
-            console.error('Login error', error);
+            console.error('Registration error', error);
           }
         );
     }
