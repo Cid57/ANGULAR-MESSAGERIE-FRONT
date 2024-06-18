@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { HttpClientModule } from '@angular/common/http';
-import { AuthentificationService } from '../authentification.sercice';
+import { AuthentificationService } from '../authentification.service';
 
 @Component({
   selector: 'app-login',
@@ -55,7 +55,12 @@ export class LoginComponent {
             }
           },
           (error) => {
-            console.error('Login error', error);
+            console.error('Erreur lors de la connexion', error);
+            if (error.status === 401) {
+              alert('Connexion échouée, email ou mot de passe incorrect.');
+            } else {
+              alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+            }
           }
         );
     }

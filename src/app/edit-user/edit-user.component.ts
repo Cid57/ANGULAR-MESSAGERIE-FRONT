@@ -30,7 +30,7 @@ import { HttpClientModule } from '@angular/common/http';
 export class EditUserComponent implements OnInit {
   formulaire: FormGroup;
   userId: string | null = null;
-  roleList: string[] = ['User', 'Admin']; // Liste des rôles disponibles
+  roleList: string[] = ['User', 'Admin'];
 
   constructor(
     private fb: FormBuilder,
@@ -54,7 +54,6 @@ export class EditUserComponent implements OnInit {
       if (this.userId) {
         this.loadUserData(this.userId);
       } else {
-        // Clear password validators if in edit mode
         this.formulaire.get('password')?.clearValidators();
         this.formulaire.get('password')?.updateValueAndValidity();
       }
@@ -63,7 +62,7 @@ export class EditUserComponent implements OnInit {
 
   loadUserData(userId: string): void {
     this.http
-      .get(`http://localhost/path-to-your-backend/get-user.php?id=${userId}`)
+      .get(`http://angular-messagerie/get-user.php?id=${userId}`)
       .subscribe((user: any) => {
         this.formulaire.patchValue({
           email: user.email,
@@ -71,7 +70,7 @@ export class EditUserComponent implements OnInit {
           lastname: user.lastname,
           role: user.role,
         });
-        // Remove password validators in edit mode
+
         this.formulaire.get('password')?.clearValidators();
         this.formulaire.get('password')?.updateValueAndValidity();
       });
@@ -92,7 +91,7 @@ export class EditUserComponent implements OnInit {
         // Update user
         this.http
           .put(
-            `http://localhost/path-to-your-backend/edit-user.php?id=${this.userId}`,
+            `http://angular-messagerie/edit-user.php?id=${this.userId}`,
             formData
           )
           .subscribe(
@@ -106,7 +105,7 @@ export class EditUserComponent implements OnInit {
       } else {
         // Add new user
         this.http
-          .post('http://localhost/path-to-your-backend/add-user.php', formData)
+          .post('http://angular-messagerie/add-user.php', formData)
           .subscribe(
             (response: any) => {
               this.router.navigate(['/gestion-utilisateurs']);

@@ -1,24 +1,17 @@
-<div class="discussions-container">
-    <mat-card class="discussions-card">
-        <mat-card-header class="header">
-            <div mat-card-avatar class="header-avatar"></div>
-            <mat-card-title>Discussions</mat-card-title>
-            <mat-card-subtitle>Bienvenue, {{ authService.firstname }} !</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-            <div class="message-list">
-                <div class="message" *ngFor="let message of messages">
-                    <p>{{ message.content }}</p>
-                    <span class="timestamp">{{ message.timestamp | date:'short' }}</span>
-                </div>
-            </div>
-            <form (ngSubmit)="sendMessage()" class="message-form">
-                <mat-form-field appearance="fill">
-                    <mat-label>Votre message</mat-label>
-                    <input matInput [(ngModel)]="newMessage" name="message" required>
-                </mat-form-field>
-                <button mat-raised-button color="accent" type="submit">Envoyer</button>
-            </form>
-        </mat-card-content>
-    </mat-card>
-</div>
+<mat-card *ngFor="let message of messages">
+    <mat-card-content>
+        <p>{{ message.content }}</p>
+        <small>{{ message.timestamp }}</small>
+    </mat-card-content>
+</mat-card>
+
+<mat-card>
+    <mat-card-content>
+        <form (ngSubmit)="sendMessage()">
+            <mat-form-field>
+                <input matInput placeholder="Nouveau message" [(ngModel)]="newMessage" name="message" required>
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="submit">Envoyer</button>
+        </form>
+    </mat-card-content>
+</mat-card>

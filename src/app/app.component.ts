@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthentificationService } from './authentification.sercice';
+import { AuthentificationService } from './authentification.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
